@@ -4,10 +4,9 @@ import { predictProperty } from "@/lib/txgemma";
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { smiles, properties, target } = body as {
+    const { smiles, properties } = body as {
       smiles: string;
       properties: string[];
-      target?: string;
     };
 
     if (!smiles || !properties || properties.length === 0) {
@@ -19,7 +18,7 @@ export async function POST(request: Request) {
 
     // Run predictions in parallel for all requested properties
     const results = await Promise.allSettled(
-      properties.map((propId) => predictProperty(smiles, propId, target))
+      properties.map((propId) => predictProperty(smiles, propId))
     );
 
     const predictions = results.map((result, i) => {

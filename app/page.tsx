@@ -17,7 +17,6 @@ import { validateSmiles } from "@/lib/smiles-utils";
 import { TopNav } from "@/components/layout/top-nav";
 import { SmilesInput } from "@/components/molecule-input/smiles-input";
 import { ModeSelector } from "@/components/molecule-input/mode-selector";
-import { TargetInput } from "@/components/molecule-input/target-input";
 import { ScaffoldSelector } from "@/components/molecule-input/scaffold-selector";
 import { KetcherDialog } from "@/components/molecule-input/ketcher-dialog";
 import { MoleculeRenderer } from "@/components/molecule-viewer/molecule-renderer";
@@ -45,7 +44,6 @@ const initialState: AppState = {
   smiles: "",
   inputMode: "smiles",
   evalMode: "admet",
-  targetSequence: "",
   predictions: [],
   sarEntries: [],
   explanations: {},
@@ -63,8 +61,6 @@ function reducer(state: AppState, action: AppAction): AppState {
       return { ...state, inputMode: action.payload };
     case "SET_EVAL_MODE":
       return { ...state, evalMode: action.payload };
-    case "SET_TARGET":
-      return { ...state, targetSequence: action.payload };
     case "SET_PREDICTIONS":
       return { ...state, predictions: action.payload };
     case "ADD_SAR_ENTRIES":
@@ -123,7 +119,6 @@ export default function Home() {
 
   const isValid = state.smiles.trim() && validateSmiles(state.smiles).valid;
   const hasResults = state.predictions.length > 0;
-  const needsTarget = state.evalMode === "binding";
 
   // ─── Handlers ────────────────────────────────────────────
 
@@ -141,7 +136,6 @@ export default function Home() {
         body: JSON.stringify({
           smiles: state.smiles.trim(),
           properties: propertyIds,
-          target: state.targetSequence || undefined,
         }),
       });
 
@@ -243,7 +237,6 @@ export default function Home() {
                 body: JSON.stringify({
                   smiles: item.smiles,
                   properties: propertyIds,
-                  target: state.targetSequence || undefined,
                 }),
               });
 
@@ -435,16 +428,6 @@ export default function Home() {
               }
             />
 
-            {/* Target input (binding mode) */}
-            {needsTarget && (
-              <TargetInput
-                value={state.targetSequence}
-                onChange={(v) =>
-                  dispatch({ type: "SET_TARGET", payload: v })
-                }
-              />
-            )}
-
             {/* Molecule Preview */}
             {state.smiles && state.inputMode !== "rgroup" && (
               <Card className="overflow-hidden bg-background/50 p-0">
@@ -537,10 +520,7 @@ export default function Home() {
                   Lipophilicity
                 </Badge>
                 <Badge variant="outline" className="text-[10px]">
-                  Binding Affinity
-                </Badge>
-                <Badge variant="outline" className="text-[10px]">
-                  Clinical Trials
+                  ADMET
                 </Badge>
               </div>
             </div>

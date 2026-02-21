@@ -6,57 +6,41 @@ import { getPropertyById } from "./constants";
  * Based on the paper format (Section 2.1, Table S.7).
  */
 
-const PROMPT_TEMPLATES: Record<string, (smiles: string, target?: string) => string> = {
+const PROMPT_TEMPLATES: Record<string, (smiles: string) => string> = {
   bbb: (smiles) =>
-    `Given a drug SMILES string, predict whether it (A) does not cross the blood-brain barrier or (B) crosses the blood-brain barrier.\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: As a membrane separating circulating blood and brain extracellular fluid, the blood-brain barrier (BBB) is the protection layer that blocks most foreign drugs. Thus the ability of a drug to penetrate the barrier to deliver to the site of action forms a crucial challenge in development of drugs for central nervous system.\nQuestion: Given a drug SMILES string, predict whether it\n(A) does not cross the BBB (B) crosses the BBB\nDrug SMILES: ${smiles}\nAnswer:`,
 
   caco2: (smiles) =>
-    `Given a drug SMILES string, predict its Caco-2 cell permeability (cm/s in log scale).\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: The human colon epithelial cancer cell line, Caco-2, is used as an in vitro model to simulate the human intestinal tissue. The experimental result on the rate of drug passing through the Caco-2 cells can approximate the rate at which the drug permeates through the human intestinal tissue.\nQuestion: Given a drug SMILES string, predict its normalized Caco-2 cell effective permeability from 000 to 1000, where 000 is minimum permeability and 1000 is maximum permeability.\nDrug SMILES: ${smiles}\nAnswer:`,
 
   ppbr: (smiles) =>
-    `Given a drug SMILES string, predict its plasma protein binding rate (%).\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: The human plasma protein binding rate (PPBR) is expressed as the percentage of a drug bound to plasma proteins in the blood. This rate strongly affect a drug's efficiency of delivery. The less bound a drug is, the more efficiently it can traverse and diffuse to the site of actions.\nQuestion: Given a drug SMILES string, predict its normalized rate of PPBR from 000 to 1000, where 000 is minimum PPBR rate and 1000 is maximum PPBR rate.\nDrug SMILES: ${smiles}\nAnswer:`,
 
   logp: (smiles) =>
-    `Given a drug SMILES string, predict its lipophilicity (logP).\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: Lipophilicity measures the ability of a drug to dissolve in a lipid (e.g. fats, oils) environment. High lipophilicity often leads to high rate of metabolism, poor solubility, high turn-over, and low absorption.\nQuestion: Given a drug SMILES string, predict its normalized lipophilicity from 000 to 1000, where 000 is minimum lipophilicity and 1000 is maximum lipophilicity.\nDrug SMILES: ${smiles}\nAnswer:`,
 
   ames: (smiles) =>
-    `Given a drug SMILES string, predict whether it is (A) not mutagenic or (B) mutagenic in the AMES test.\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: Mutagenicity means the ability of a drug to induce genetic alterations. Drugs that can cause damage to the DNA can result in cell death or other severe adverse effects. Nowadays, the most widely used assay for testing the mutagenicity of compounds is the Ames experiment which was invented by a professor named Ames. The Ames test is a short-term bacterial reverse mutation assay detecting a large number of compounds which can induce genetic damage and frameshift mutations.\nQuestion: Given a drug SMILES string, predict whether it\n(A) is not mutagenic (B) is mutagenic\nDrug SMILES: ${smiles}\nAnswer:`,
 
   dili: (smiles) =>
-    `Given a drug SMILES string, predict whether it (A) does not cause drug-induced liver injury or (B) causes drug-induced liver injury.\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: Drug-induced liver injury (DILI) is fatal liver disease caused by drugs and it has been the single most frequent cause of safety-related drug marketing withdrawals for the past 50 years (e.g. iproniazid, ticrynafen, benoxaprofen).\nQuestion: Given a drug SMILES string, predict whether it\n(A) cannot cause DILI (B) can cause DILI\nDrug SMILES: ${smiles}\nAnswer:`,
 
   herg: (smiles) =>
-    `Given a drug SMILES string, predict whether it (A) does not inhibit the hERG channel or (B) inhibits the hERG channel.\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: Human ether-à-go-go related gene (hERG) is crucial for the coordination of the heart's beating. Thus, if a drug blocks the hERG, it could lead to severe adverse effects. Therefore, reliable prediction of hERG liability in the early stages of drug design is quite important to reduce the risk of cardiotoxicity-related attritions in the later development stages.\nQuestion: Given a drug SMILES string, predict whether it\n(A) does not block hERG (B) blocks hERG\nDrug SMILES: ${smiles}\nAnswer:`,
 
   ld50: (smiles) =>
-    `Given a drug SMILES string, predict its acute toxicity LD50 value (log mg/kg).\nDrug SMILES: ${smiles}\nAnswer:`,
-
-  ic50: (smiles, target) =>
-    `Given a drug SMILES string and a target protein, predict the binding affinity IC50 (nM in log scale).\nDrug SMILES: ${smiles}\nTarget: ${target || "Unknown"}\nAnswer:`,
-
-  kd: (smiles, target) =>
-    `Given a drug SMILES string and a target protein, predict the dissociation constant Kd (nM in log scale).\nDrug SMILES: ${smiles}\nTarget: ${target || "Unknown"}\nAnswer:`,
-
-  clinical_phase1: (smiles) =>
-    `Given a drug SMILES string, predict whether it will (A) fail or (B) pass Phase 1 clinical trial.\nDrug SMILES: ${smiles}\nAnswer:`,
-
-  clinical_phase2: (smiles) =>
-    `Given a drug SMILES string, predict whether it will (A) fail or (B) pass Phase 2 clinical trial.\nDrug SMILES: ${smiles}\nAnswer:`,
-
-  clinical_phase3: (smiles) =>
-    `Given a drug SMILES string, predict whether it will (A) fail or (B) pass Phase 3 clinical trial.\nDrug SMILES: ${smiles}\nAnswer:`,
+    `Instructions: Answer the following question about drug properties.\nContext: Acute toxicity LD50 measures the most conservative dose that can lead to lethal adverse effects. The lower the dose, the more lethal of a drug.\nQuestion: Given a drug SMILES string, predict its normalized LD50 from 000 to 1000, where 000 is minimum LD50 and 1000 is maximum LD50.\nDrug SMILES: ${smiles}\nAnswer:`,
 };
 
 export function buildPredictionPrompt(
   propertyId: string,
   smiles: string,
-  target?: string
 ): string {
   const template = PROMPT_TEMPLATES[propertyId];
   if (!template) {
     throw new Error(`No prompt template for property: ${propertyId}`);
   }
-  return template(smiles, target);
+  return template(smiles);
 }
 
 export function buildExplanationPrompt(

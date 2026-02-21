@@ -245,14 +245,27 @@ function parseClassification(
 }
 
 /**
- * Parse TxGemma regression response: extracts numeric value.
+ * Rescaling functions for each regression property.
+ * TxGemma outputs integers 000–1000; these convert to real units.
+ */
+const REGRESSION_RESCALERS: Record<string, (raw: number) => number> = {
+  logp:  (raw) => raw / 100 - 2,
+  ppbr:  (raw) => raw / 10,
+  caco2: (raw) => raw / 200 - 3,
+  ld50:  (raw) => Math.pow(10, raw / 100 - 1),
+};
+
+/**
+ * Parse TxGemma regression response: extracts the 0-1000 integer and rescales to real units.
  */
 function parseRegression(
   raw: string,
   property: PropertyDefinition
 ): { numericValue: number; value: string; status: "neutral" } {
-  const match = raw.match(/-?[\d]+\.?[\d]*/);
-  const numericValue = match ? parseFloat(match[0]) : 0;
+  const match = raw.match(/\d+/);
+  const rawInt = match ? parseInt(match[0], 10) : 0;
+  const rescaler = REGRESSION_RESCALERS[property.id];
+  const numericValue = rescaler ? rescaler(rawInt) : rawInt;
   const unit = property.unit ? ` ${property.unit}` : "";
   return {
     numericValue,
@@ -267,14 +280,13 @@ function parseRegression(
 export async function predictProperty(
   smiles: string,
   propertyId: string,
-  target?: string
 ): Promise<PredictionResult> {
   const property = getPropertyById(propertyId);
   if (!property) {
     throw new Error(`Unknown property: ${propertyId}`);
   }
 
-  const prompt = buildPredictionPrompt(propertyId, smiles, target);
+  const prompt = buildPredictionPrompt(propertyId, smiles);
   const raw = await rawPredict(prompt);
 
   if (property.type === "classification") {

@@ -1,6 +1,6 @@
 export type PredictionType = "classification" | "regression";
 
-export type PropertyCategory = "pharmacokinetics" | "toxicity" | "binding" | "clinical";
+export type PropertyCategory = "pharmacokinetics" | "toxicity";
 
 export interface PropertyDefinition {
   id: string;
@@ -67,13 +67,12 @@ export interface ChatMessage {
 
 export type InputMode = "smiles" | "sketch" | "rgroup";
 
-export type EvalMode = "admet" | "bbb" | "toxicity" | "binding" | "clinical";
+export type EvalMode = "admet" | "bbb" | "toxicity";
 
 export interface AppState {
   smiles: string;
   inputMode: InputMode;
   evalMode: EvalMode;
-  targetSequence: string;
   predictions: PredictionResult[];
   sarEntries: SAREntry[];
   explanations: Record<string, ExplanationResult>;
@@ -88,7 +87,6 @@ export type AppAction =
   | { type: "SET_SMILES"; payload: string }
   | { type: "SET_INPUT_MODE"; payload: InputMode }
   | { type: "SET_EVAL_MODE"; payload: EvalMode }
-  | { type: "SET_TARGET"; payload: string }
   | { type: "SET_PREDICTIONS"; payload: PredictionResult[] }
   | { type: "ADD_SAR_ENTRIES"; payload: SAREntry[] }
   | { type: "TOGGLE_SAR_ENTRY"; payload: string }

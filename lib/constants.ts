@@ -70,53 +70,8 @@ export const PROPERTY_DEFINITIONS: PropertyDefinition[] = [
     shortName: "LD50",
     category: "toxicity",
     type: "regression",
-    unit: "log(mg/kg)",
+    unit: "mg/kg",
     description: "Lethal dose for 50% of test population",
-  },
-  {
-    id: "ic50",
-    name: "IC50 Binding Affinity",
-    shortName: "IC50",
-    category: "binding",
-    type: "regression",
-    unit: "nM (log)",
-    description: "Half-maximal inhibitory concentration for target binding",
-  },
-  {
-    id: "kd",
-    name: "Dissociation Constant (Kd)",
-    shortName: "Kd",
-    category: "binding",
-    type: "regression",
-    unit: "nM (log)",
-    description: "Equilibrium dissociation constant for drug-target binding",
-  },
-  {
-    id: "clinical_phase1",
-    name: "Phase 1 Trial Approval",
-    shortName: "Phase 1",
-    category: "clinical",
-    type: "classification",
-    description: "Predicted likelihood of passing Phase 1 clinical trial",
-    labels: { A: "Fails", B: "Passes" },
-  },
-  {
-    id: "clinical_phase2",
-    name: "Phase 2 Trial Approval",
-    shortName: "Phase 2",
-    category: "clinical",
-    type: "classification",
-    description: "Predicted likelihood of passing Phase 2 clinical trial",
-    labels: { A: "Fails", B: "Passes" },
-  },
-  {
-    id: "clinical_phase3",
-    name: "Phase 3 Trial Approval",
-    shortName: "Phase 3",
-    category: "clinical",
-    type: "classification",
-    description: "Predicted likelihood of passing Phase 3 clinical trial",
-    labels: { A: "Fails", B: "Passes" },
   },
 ];
 
@@ -124,16 +79,12 @@ export const EVAL_MODE_PROPERTIES: Record<EvalMode, string[]> = {
   admet: ["bbb", "caco2", "ppbr", "logp", "ames", "dili", "herg", "ld50"],
   bbb: ["bbb", "logp", "caco2", "ppbr"],
   toxicity: ["ames", "dili", "herg", "ld50"],
-  binding: ["ic50", "kd"],
-  clinical: ["clinical_phase1", "clinical_phase2", "clinical_phase3"],
 };
 
 export const EVAL_MODE_LABELS: Record<EvalMode, string> = {
   admet: "General ADMET",
   bbb: "BBB Penetration",
   toxicity: "Toxicity Panel",
-  binding: "Binding Affinity",
-  clinical: "Clinical Trial",
 };
 
 export const SCAFFOLDS = [
