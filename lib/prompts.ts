@@ -50,7 +50,7 @@ export function buildExplanationPrompt(
 ): string {
   return `You are TxGemma, a therapeutic AI model. A molecule with SMILES "${smiles}" was predicted to have the following result for ${property.name}: ${prediction}.
 
-Please explain why this molecule shows this property based on its structural features. Cite specific functional groups, molecular weight considerations, hydrogen bonding capacity, lipophilicity, charge distribution, and any other relevant structural characteristics. Be concise but scientifically rigorous.`;
+In 2-3 sentences, explain why this molecule shows this property. Focus on the most relevant structural features (e.g. functional groups, MW, H-bond donors/acceptors, logP, charge). Be direct and scientifically precise. Do not add caveats, disclaimers, or closing remarks.`;
 }
 
 export function buildChatSystemPrompt(

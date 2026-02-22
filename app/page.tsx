@@ -5,7 +5,6 @@ import type {
   AppState,
   AppAction,
   InputMode,
-  EvalMode,
   PredictionResult,
   SAREntry,
   ExplanationResult,
@@ -158,7 +157,7 @@ export default function Home() {
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });
     }
-  }, [state.smiles, state.evalMode, state.targetSequence, isValid]);
+  }, [state.smiles, state.evalMode, isValid]);
 
   const handleExplain = useCallback(
     async (propertyId: string) => {
@@ -280,7 +279,7 @@ export default function Home() {
         dispatch({ type: "SET_LOADING", payload: false });
       }
     },
-    [state.evalMode, state.targetSequence]
+    [state.evalMode]
   );
 
   const handleChatMessage = useCallback(
@@ -359,7 +358,7 @@ export default function Home() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* ─── Left Panel: Input ─── */}
-        <aside className="flex w-full flex-col overflow-y-auto border-r border-border bg-card p-4 lg:w-[420px] lg:min-w-[380px]">
+        <aside className="flex w-full flex-col overflow-y-auto border-r border-border bg-card p-4 lg:w-[630px] lg:min-w-[570px]">
           <div className="flex flex-col gap-5">
             {/* TxGemma Chat */}
             <MoleculeChat
@@ -493,9 +492,24 @@ export default function Home() {
         <main className="flex flex-1 flex-col overflow-y-auto p-6">
           {!hasResults && state.sarEntries.length === 0 && (
             <div className="flex flex-1 flex-col items-center justify-center gap-4 text-center">
-              <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-                <FlaskConical className="size-8 text-primary" />
-              </div>
+              <svg viewBox="0 0 200 200" className="size-16 text-primary">
+                <defs>
+                  <radialGradient id="esg" cx="40%" cy="35%" r="60%">
+                    <stop offset="0%" stopColor="oklch(0.85 0.14 328)" />
+                    <stop offset="100%" style={{ stopColor: "var(--primary)" }} />
+                  </radialGradient>
+                </defs>
+                <circle cx="100" cy="100" r="90" fill="currentColor" fillOpacity="0.07" stroke="currentColor" strokeWidth="3" strokeOpacity="0.25" />
+                <line x1="100" y1="100" x2="100" y2="50"  stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                <line x1="100" y1="100" x2="50"  y2="100" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                <line x1="100" y1="100" x2="150" y2="100" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                <line x1="100" y1="100" x2="135" y2="145" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+                <circle cx="100" cy="100" r="22" fill="url(#esg)" />
+                <circle cx="100" cy="50"  r="12" fill="url(#esg)" />
+                <circle cx="50"  cy="100" r="14" fill="url(#esg)" />
+                <circle cx="150" cy="100" r="14" fill="url(#esg)" />
+                <circle cx="135" cy="145" r="14" fill="url(#esg)" />
+              </svg>
               <div className="flex flex-col gap-1.5">
                 <h2 className="text-lg font-semibold text-foreground">
                   Ready to explore

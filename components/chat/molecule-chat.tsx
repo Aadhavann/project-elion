@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback } from "react";
 import type { ChatMessage, DesignSuggestion, StartingMolecule } from "@/lib/types";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -38,12 +38,6 @@ export function MoleculeChat({
   onClear,
 }: MoleculeChatProps) {
   const [input, setInput] = useState("");
-  const bottomRef = useRef<HTMLDivElement>(null);
-
-  // Auto-scroll to bottom on new messages
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
 
   const handleSend = useCallback(() => {
     if (input.trim() && !isLoading) {
@@ -63,7 +57,7 @@ export function MoleculeChat({
   );
 
   return (
-    <Card className="flex flex-col h-[300px] overflow-hidden p-0">
+    <Card className="flex flex-col h-[450px] overflow-hidden p-0">
       {/* Header */}
       <div className="flex items-center justify-between px-3 py-2 border-b border-border">
         <div className="flex items-center gap-1.5">
@@ -101,7 +95,7 @@ export function MoleculeChat({
               {isLoading && <TypingIndicator />}
             </>
           )}
-          <div ref={bottomRef} />
+
         </div>
       </div>
 

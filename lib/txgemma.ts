@@ -74,11 +74,7 @@ async function rawPredict(prompt: string): Promise<string> {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        instances: [{ prompt }],
-        parameters: {
-          max_tokens: 64,
-          temperature: 0.0,
-        },
+        instances: [{ prompt, max_tokens: 64, temperature: 0.0 }],
       }),
     });
   } catch (fetchErr) {
@@ -151,6 +147,7 @@ async function chatPredict(messages: Array<{ role: string; content: string }>): 
   const url = `https://${CHAT_REGION}-aiplatform.googleapis.com/v1/projects/${PROJECT_ID}/locations/${CHAT_REGION}/endpoints/${CHAT_ENDPOINT_ID}:rawPredict`;
 
   const prompt = formatGemmaChatPrompt(messages);
+  console.log("[chatPredict] Prompt char length:", prompt.length, "~approx tokens:", Math.ceil(prompt.length / 4));
 
   const response = await fetch(url, {
     method: "POST",
@@ -159,11 +156,15 @@ async function chatPredict(messages: Array<{ role: string; content: string }>): 
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      instances: [{ prompt }],
-      parameters: {
-        max_tokens: 8192,  // High limit to account for prompt echo from model
+      // For vLLM on Vertex AI rawPredict, generation parameters must be inside
+      // the instances object — the top-level "parameters" field is for Vertex AI's
+      // own API and is NOT forwarded to the vLLM server, causing it to be ignored
+      // and fall back to the deployment default (~15-20 tokens), causing truncation.
+      instances: [{
+        prompt,
+        max_tokens: 2048,
         temperature: 0.3,
-      },
+      }],
     }),
   });
 
@@ -174,7 +175,7 @@ async function chatPredict(messages: Array<{ role: string; content: string }>): 
 
   const data = await response.json();
 
-  console.log("[chatPredict] Full response:", JSON.stringify(data, null, 2).slice(0, 2000));
+  console.log("[chatPredict] Full response:", JSON.stringify(data, null, 2).slice(0, 5000));
 
   let rawText = "";
   if (data.predictions && data.predictions.length > 0) {

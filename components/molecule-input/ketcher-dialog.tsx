@@ -54,35 +54,32 @@ export function KetcherDialog({ open, onOpenChange, onApply }: KetcherDialogProp
         );
       }
 
-      // Get MOL file (reliable) instead of SMILES (unreliable in standalone mode)
-      let molfile: string;
-      if (typeof ketcher.getMolfile === "function") {
-        molfile = await ketcher.getMolfile();
-      } else if (typeof ketcher.getKet === "function") {
-        // Fallback: try to get SMILES directly
+      // Try native SMILES export first — no external CDN dependency
+      if (typeof ketcher.getSmiles === "function") {
         const smiles = await ketcher.getSmiles();
         if (smiles && smiles.trim()) {
           onApply(smiles.trim());
           onOpenChange(false);
           return;
         }
-        throw new Error("Could not extract molecule data from Ketcher");
-      } else {
-        throw new Error("Ketcher API methods not available");
       }
 
-      if (!molfile || molfile.trim().length < 10) {
-        throw new Error("No molecule drawn. Please draw a structure first.");
+      // Fall back to MOL file → RDKit.js WASM conversion
+      if (typeof ketcher.getMolfile === "function") {
+        const molfile = await ketcher.getMolfile();
+        if (!molfile || molfile.trim().length < 10) {
+          throw new Error("No molecule drawn. Please draw a structure first.");
+        }
+        const smiles = await molToSmiles(molfile);
+        if (!smiles) {
+          throw new Error("Conversion produced empty SMILES");
+        }
+        onApply(smiles);
+        onOpenChange(false);
+        return;
       }
 
-      // Convert MOL to SMILES using RDKit.js WASM
-      const smiles = await molToSmiles(molfile);
-      if (!smiles) {
-        throw new Error("Conversion produced empty SMILES");
-      }
-
-      onApply(smiles);
-      onOpenChange(false);
+      throw new Error("No molecule drawn. Please draw a structure first.");
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to extract molecule"
@@ -130,7 +127,7 @@ export function KetcherDialog({ open, onOpenChange, onApply }: KetcherDialogProp
 
         <DialogFooter className="px-6 pb-6 pt-2">
           <Badge variant="outline" className="mr-auto text-[10px]">
-            MOL → SMILES via RDKit.js
+            Powered by Ketcher
           </Badge>
           <Button variant="outline" onClick={() => onOpenChange(false)}>
             Cancel
