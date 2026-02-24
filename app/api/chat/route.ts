@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { chatWithContext, parseChatResponse } from "@/lib/txgemma";
+import { getCachedChatResponse } from "@/lib/prediction-cache";
 
 export async function POST(request: Request) {
   try {
@@ -15,6 +16,12 @@ export async function POST(request: Request) {
         { error: "Missing required field: messages" },
         { status: 400 }
       );
+    }
+
+    // Return pre-written response instantly for the 3 suggested starter prompts
+    const cached = getCachedChatResponse(messages);
+    if (cached) {
+      return NextResponse.json(cached);
     }
 
     const raw = await chatWithContext(messages, currentSmiles, currentPredictions);

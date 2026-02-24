@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { predictProperty } from "@/lib/txgemma";
+import { getCachedPredictions } from "@/lib/prediction-cache";
 
 export async function POST(request: Request) {
   try {
@@ -14,6 +15,12 @@ export async function POST(request: Request) {
         { error: "Missing required fields: smiles, properties" },
         { status: 400 }
       );
+    }
+
+    // Return pre-computed results instantly for known example molecules
+    const cached = getCachedPredictions(smiles, properties);
+    if (cached) {
+      return NextResponse.json({ predictions: cached });
     }
 
     // Run predictions in parallel for all requested properties
