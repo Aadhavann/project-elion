@@ -2,6 +2,8 @@
 
 Project Elion is a drug discovery sandbox powered by Google TxGemma. It predicts molecular properties, explores SAR (Structure-Activity Relationships), and generates mechanistic explanations.
 
+<img width="883" height="507" alt="Screenshot 2026-02-24 095856" src="https://github.com/user-attachments/assets/1f456cdd-61b8-44b4-a266-318d7f15b2d1" />
+
 ## Prerequisites
 
 - Node.js 18+ 
