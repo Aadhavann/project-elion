@@ -54,6 +54,9 @@ The application will be available at `http://localhost:3000` (or another availab
 - **AI Explanations**: Mechanistic explanations for predictions
 - **Molecular Chat**: Conversational interface for drug design guidance
 
+<img width="765" height="652" alt="Screenshot 2026-02-24 095922" src="https://github.com/user-attachments/assets/5343079f-c443-446a-b30e-6e954d896465" />
+<img width="1094" height="593" alt="Screenshot 2026-02-24 100016" src="https://github.com/user-attachments/assets/f1fd258c-9345-4583-bf82-e33f2a72536e" />
+
 ## Architecture
 
 - **Frontend**: Next.js 16 with React 19
